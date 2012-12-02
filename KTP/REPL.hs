@@ -1,14 +1,14 @@
 module KTP.REPL where
 
-import Control.Applicative
-import Control.Monad
-import Control.Monad.IO.Class
-import qualified Data.Map as M
-import System.Console.Haskeline
-import Text.Parsec
+import           Control.Applicative
+import           Control.Monad
+import           Control.Monad.IO.Class
+import qualified Data.Map                 as M
+import           System.Console.Haskeline
+import           Text.Parsec
 
-import KTP.AST
-import KTP.Parser
+import           KTP.AST
+import           KTP.Parser
 
 repl :: IO ()
 repl = runInputT defaultSettings (loop $ M.fromList [])

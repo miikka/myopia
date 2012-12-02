@@ -1,12 +1,12 @@
-import Control.Applicative
-import Control.Monad
-import qualified Data.Map as M
-import Debug.Trace
-import System.Environment
+import           Control.Applicative
+import           Control.Monad
+import qualified Data.Map            as M
+import           Debug.Trace
+import           System.Environment
 
-import KTP.AST
-import KTP.Parser (parseFile)
-import KTP.REPL
+import           KTP.AST
+import           KTP.Parser          (parseFile)
+import           KTP.REPL
 
 arity :: Expr -> Integer
 arity Z = 1

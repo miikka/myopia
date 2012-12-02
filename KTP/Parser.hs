@@ -1,13 +1,13 @@
 module KTP.Parser where
 
-import Control.Applicative ((<$>))
-import Control.Monad
-import Data.Char
-import qualified Data.Map as M
-import Text.Parsec
-import Text.Parsec.String
+import           Control.Applicative ((<$>))
+import           Control.Monad
+import           Data.Char
+import qualified Data.Map            as M
+import           Text.Parsec
+import           Text.Parsec.String
 
-import KTP.AST
+import           KTP.AST
 
 brackets, parens :: Parser a -> Parser a
 brackets = between (char '[' >> spaces) (spaces >> char ']')
@@ -64,7 +64,7 @@ comment :: Parser ()
 comment = string "--" >> skipMany1 (noneOf "\n")
 
 linespace :: Parser ()
-linespace = skipMany $ oneOf " \t" 
+linespace = skipMany $ oneOf " \t"
 
 linebreak :: Parser ()
 linebreak = linespace >> optional comment >> newline >> commentSpaces

@@ -1,12 +1,12 @@
 {-# LANGUAGE ViewPatterns #-}
 module KTP.AST where
 
-import Control.Applicative
-import Control.Monad.Reader
-import Data.Map (Map)
-import qualified Data.Map as M
+import           Control.Applicative
+import           Control.Monad.Reader
+import           Data.Map             (Map)
+import qualified Data.Map             as M
 
-import Debug.Trace
+import           Debug.Trace
 
 data Expr = Z
           | S
@@ -30,7 +30,7 @@ arityM (I _ k) = return k
 arityM (C _ gs) = arityM (head gs)
 arityM (P g _) = succ <$> arityM g
 arityM (M f) = pred <$> arityM f
-arityM (FC fn) = getDef fn >>= arityM 
+arityM (FC fn) = getDef fn >>= arityM
 
 getDef :: FunName -> KTPM Expr
 getDef fn = asks (M.! fn)
