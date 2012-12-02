@@ -13,5 +13,7 @@ executable ktp
   main-is:             KTP.hs
   build-depends:       base ==4.5.*,
                        containers,
+                       haskeline,
                        mtl,
-                       parsec
+                       parsec,
+                       transformers
