@@ -5,6 +5,7 @@ import           Control.Applicative
 import           Control.Monad.Reader
 import           Data.Map             (Map)
 import qualified Data.Map             as M
+import           Data.Monoid
 
 import           Debug.Trace
 
@@ -18,8 +19,17 @@ data Expr = Z
           deriving (Eq, Show)
 
 type FunName = String
+type Arity = Integer
 type Fun = Expr
-type Program = Map FunName Expr
+
+data Program = Program
+    { funDefs  :: Map FunName Fun
+    , typeDefs :: Map FunName Arity
+    } deriving (Show)
+
+instance Monoid Program where
+    mempty = Program mempty mempty
+    mappend (Program a1 b1) (Program a2 b2) = Program (a1 <> a2) (b1 <> b2)
 
 type KTPM = Reader Program
 
@@ -33,7 +43,7 @@ arityM (M f) = pred <$> arityM f
 arityM (FC fn) = getDef fn >>= arityM
 
 getDef :: FunName -> KTPM Expr
-getDef fn = asks (M.! fn)
+getDef fn = asks ((M.! fn) . funDefs)
 
 runKTPM :: KTPM a -> Program -> a
 runKTPM = runReader
@@ -59,10 +69,9 @@ eval (FC "bottom") xs = error "Function \"bottom\" called."
 eval (FC fn) xs = getDef fn >>= \f -> eval f xs
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
-runProgram prog fn params = runKTPM (eval (prog M.! fn) params) prog
+runProgram prog fn params = runKTPM (eval (funDefs prog M.! fn) params) prog
 
 minimize :: Expr -> [Integer] -> Integer -> KTPM Integer
 minimize f xs z = do
     yz <- eval f (z:xs)
     if yz == 0 then return z else minimize f xs (z+1)
-

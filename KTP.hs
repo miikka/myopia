@@ -1,6 +1,7 @@
 import           Control.Applicative
 import           Control.Monad
-import qualified Data.Map            as M
+import           Data.Map.Lazy       (Map)
+import qualified Data.Map.Lazy       as M
 import           Debug.Trace
 import           System.Environment
 
@@ -43,15 +44,23 @@ main = do
     (fp : name : _) <- getArgs
     if fp == "repl" then repl else runFile fp name
 
+traverseWithKey_ :: Applicative t => (k -> a -> t ()) -> Map k a -> t ()
+traverseWithKey_ f m = M.traverseWithKey (\k a -> f k a *> pure a) m *> pure ()
+
 runFile :: FilePath -> String -> IO ()
 runFile fp name = do
     prog <- parseFile fp
     print prog
-    let def = prog M.! name
+    let def = funDefs prog M.! name
         mainArity = runKTPM (arityM def) prog
     unless (runKTPM (checkM def) prog) $ error "Typechecking failed."
+    traverseWithKey_ (checkTypeDef prog) (typeDefs prog)
     putStrLn $ "Expecting " ++ show mainArity ++ " parameters."
     params <- forM [1..mainArity] (\_ -> liftM read getLine)
     print $ runProgram prog name params
 
--- vim: set ts=4 sw=4
+checkTypeDef :: Program -> FunName -> Arity -> IO ()
+checkTypeDef prog fn a =
+    unless (runKTPM (arityM (funDefs prog M.! fn)) prog == a) $ error "Typechecking failed."
+
+-- vim: set ts=4 sw=4 et

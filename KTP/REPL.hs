@@ -4,6 +4,7 @@ import           Control.Applicative
 import           Control.Monad
 import           Control.Monad.IO.Class
 import qualified Data.Map                 as M
+import           Data.Monoid
 import           System.Console.Haskeline
 import           Text.Parsec
 
@@ -11,7 +12,7 @@ import           KTP.AST
 import           KTP.Parser
 
 repl :: IO ()
-repl = runInputT defaultSettings (loop $ M.fromList [])
+repl = runInputT defaultSettings (loop $ mempty)
   where
     loop :: Program -> InputT IO ()
     loop prog = do
@@ -28,7 +29,7 @@ runCommand :: String -> [String] -> Program -> InputT IO Program
 runCommand "d" args prog =
     case parse def "<repl>" (unwords args) of
         Left err -> liftIO (print err) >> return prog
-        Right (n,d) -> return $ M.insert n d prog
+        Right (FunDef n d) -> return $ prog { funDefs = M.insert n d (funDefs prog) }
 runCommand "e" [name] prog = do
     let arity = getArity prog name
     liftIO $ putStrLn $ "Expecting " ++ show arity ++ " parameters."

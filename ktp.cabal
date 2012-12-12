@@ -12,8 +12,8 @@ cabal-version:       >=1.8
 executable ktp
   main-is:             KTP.hs
   build-depends:       base ==4.5.*,
-                       containers,
+                       containers >= 0.5.0.0,
                        haskeline,
                        mtl,
-                       parsec,
+                       parsec >= 3.0.0,
                        transformers
