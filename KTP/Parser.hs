@@ -28,7 +28,7 @@ nameParser = do
 exprParser :: Parser Expr
 exprParser = fcp <|> sp <|> zp <|> ip <|> cp <|> pp <|> mp
   where
-    fcp = FC <$> nameParser
+    fcp = (FC <$> nameParser) <?> "function call"
     sp = char 'S' >> return S
     zp = char 'Z' >> return Z
     ip = char 'I' >> brackets (do
@@ -49,19 +49,19 @@ exprParser = fcp <|> sp <|> zp <|> ip <|> cp <|> pp <|> mp
     mp = char 'M' >> parens (M <$> exprParser)
 
 def :: Parser (String, Expr)
-def = do
+def = (do
     name <- many1 alphaNum
     spaces
     void $ char '='
     spaces
     expr <- exprParser
-    return (name, expr)
+    return (name, expr)) <?> "definition"
 
 commentSpaces :: Parser ()
 commentSpaces = skipMany (comment <|> void space)
 
 comment :: Parser ()
-comment = string "--" >> skipMany1 (noneOf "\n")
+comment = string "--" >> skipMany1 (noneOf "\n") <?> "comment"
 
 linespace :: Parser ()
 linespace = skipMany $ oneOf " \t"
@@ -73,6 +73,7 @@ program :: Parser Program
 program = do
     commentSpaces
     defs <- def `sepEndBy1` linebreak
+    eof
     return $ M.fromList defs
 
 parseFile :: FilePath -> IO Program
