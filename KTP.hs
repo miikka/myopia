@@ -31,12 +31,18 @@ checkM :: Expr -> KTPM Bool
 checkM (C h gs) = do
     a <- arityM h
     res <- mapM arityM gs
-    return $ length gs == fromIntegral a && all (== head res) res
+
+    hc <- checkM h
+    gsc <- mapM checkM gs
+
+    return $ length gs == fromIntegral a && all (== head res) res && and gsc && hc
 checkM (P g h) = do
     ag <- arityM g
     ah <- arityM h
-    return $ ah == ag + 2
-checkM (M f) = arityM f >>= \x -> return (x > 1)
+    gc <- checkM g
+    hc <- checkM h
+    return $ ah == ag + 2 && gc && hc
+checkM (M f) = arityM f >>= \x -> checkM f >>= \fc -> return (x > 1 && fc)
 checkM _ = return True
 
 main :: IO ()
