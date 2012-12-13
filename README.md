@@ -13,10 +13,10 @@ Myopia deals with functions from tuples of natural numbers to natural numbers (N
 * `S`, the successor function.
 * `I[i,k]`, the family of identity functions.
 * `C`, the composition operator.
-* `P`, the primitive reursive operator.
+* `P`, the primitive recursive operator.
 * `M`, the minimisation operator.
 
-The programs consists of function definitions. Optionally you can also declare
+The programs consist of function definitions. Optionally you can also declare
 the type of the function.
 
     -- this is a comment
@@ -85,7 +85,7 @@ Feature ideas:
 
 * Type inference for `I[i,k]` operators so you don't need to explicitly mention
   `k` (or even `i` in the case of `I[1,1]`).
-* Unicode syntax. How wouldn't love `plus : א × א → א`?
+* Unicode syntax. Who wouldn't love `plus : א → א × א`?
 
 [pltgames]: http://www.pltgames.com/competition/2012/12
 [murec]: http://en.wikipedia.org/wiki/Μ-recursive_function
