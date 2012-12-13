@@ -81,6 +81,11 @@ decreased. Some random ideas to think about:
   ...). Could the language be based on this?
 * Could the amount of I operators be limited?
 
+Feature ideas:
+
+* Type inference for `I[i,k]` operators so you don't need to explicitly mention
+  `k` (or even `i` in the case of `I[1,1]`).
+* Unicode syntax. How wouldn't love `plus : א × א → א`?
 
 [pltgames]: http://www.pltgames.com/competition/2012/12
 [murec]: http://en.wikipedia.org/wiki/Μ-recursive_function
