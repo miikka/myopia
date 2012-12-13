@@ -1,12 +1,12 @@
-# KTP, a µ-recursive programming language
+# Myopia, a µ-recursive programming language
 
-*KTP* is a programming language based on [µ-recursive functions][murec].
+*Myopia* is a programming language based on [µ-recursive functions][murec].
 It's an entry for [PLT Games December 2012][pltgames] competition "Into the
 Turing Tarpit".
 
 ## How does it work?
 
-KTP deals with functions from tuples of natural numbers to natural numbers (N^n
+Myopia deals with functions from tuples of natural numbers to natural numbers (N^n
 -> N). The functions are constructed by composing the following primitives:
 
 * `Z`, the zero function.
@@ -69,6 +69,17 @@ Using multiplication, we can calculate factorials.
     fac = C(P(c1, C(mult, I[2,3], C(S, I[1,3]))), id, Z)
 
 *TODO* construct fib.
+
+## Further work
+
+I have a feeling that by golfing around the complexity of the language could be
+decreased. Some random ideas to think about:
+
+* Could M and P operators be combined?
+* According to Kleene's normal form theorem, all µ-recursive functions can be
+  written using two primitive recursive functions g, h in the form g(µh(...),
+  ...). Could the language be based on this?
+* Could the amount of I operators be limited?
 
 
 [pltgames]: http://www.pltgames.com/competition/2012/12

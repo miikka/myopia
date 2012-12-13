@@ -1,5 +1,5 @@
 {-# LANGUAGE ViewPatterns #-}
-module KTP.AST where
+module Myopia.AST where
 
 import           Control.Applicative
 import           Control.Monad.Reader
@@ -31,9 +31,9 @@ instance Monoid Program where
     mempty = Program mempty mempty
     mappend (Program a1 b1) (Program a2 b2) = Program (a1 <> a2) (b1 <> b2)
 
-type KTPM = Reader Program
+type MyopiaM = Reader Program
 
-arityM :: Expr -> KTPM Integer
+arityM :: Expr -> MyopiaM Integer
 arityM Z = return 1
 arityM S = return 1
 arityM (I _ k) = return k
@@ -42,16 +42,16 @@ arityM (P g _) = succ <$> arityM g
 arityM (M f) = pred <$> arityM f
 arityM (FC fn) = getDef fn >>= arityM
 
-getDef :: FunName -> KTPM Expr
+getDef :: FunName -> MyopiaM Expr
 getDef fn = asks ((M.! fn) . funDefs)
 
-runKTPM :: KTPM a -> Program -> a
-runKTPM = runReader
+runMyopiaM :: MyopiaM a -> Program -> a
+runMyopiaM = runReader
 
 getArity :: Program -> FunName -> Integer
-getArity prog fn = runKTPM (getDef fn >>= arityM) prog
+getArity prog fn = runMyopiaM (getDef fn >>= arityM) prog
 
-eval :: Expr -> [Integer] -> KTPM Integer
+eval :: Expr -> [Integer] -> MyopiaM Integer
 -- showing only the first param to prevent evaling bottom
 eval e p | trace ("eval " ++ show e ++ " [" ++ show (head p) ++ ",…]" ) False = undefined
 eval Z [_] = return 0
@@ -69,9 +69,9 @@ eval (FC "bottom") xs = error "Function \"bottom\" called."
 eval (FC fn) xs = getDef fn >>= \f -> eval f xs
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
-runProgram prog fn params = runKTPM (eval (funDefs prog M.! fn) params) prog
+runProgram prog fn params = runMyopiaM (eval (funDefs prog M.! fn) params) prog
 
-minimize :: Expr -> [Integer] -> Integer -> KTPM Integer
+minimize :: Expr -> [Integer] -> Integer -> MyopiaM Integer
 minimize f xs z = do
     yz <- eval f (z:xs)
     if yz == 0 then return z else minimize f xs (z+1)

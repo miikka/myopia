@@ -1,4 +1,4 @@
-module KTP.Parser where
+module Myopia.Parser where
 
 import           Control.Applicative ((<$>))
 import           Control.Monad
@@ -8,7 +8,7 @@ import           Data.Monoid
 import           Text.Parsec
 import           Text.Parsec.String
 
-import           KTP.AST
+import           Myopia.AST
 
 data Def = TypeDef FunName Arity
          | FunDef FunName Fun

@@ -8,9 +8,9 @@ import           Debug.Trace
 import           System.Environment
 import           Text.Printf
 
-import           KTP.AST
-import           KTP.Parser                 (parseFile)
-import           KTP.REPL
+import           Myopia.AST
+import           Myopia.Parser              (parseFile)
+import           Myopia.REPL
 
 arity :: Expr -> Integer
 arity Z = 1
@@ -32,10 +32,10 @@ check (FC _) = True
 
 type TypeError = (FunName, Expr, String)
 
-ensure :: Bool -> String -> Expr -> String -> EitherT TypeError KTPM ()
+ensure :: Bool -> String -> Expr -> String -> EitherT TypeError MyopiaM ()
 ensure p ctx e msg = unless p $ left (ctx, e, msg)
 
-checkM :: FunName -> Expr -> EitherT TypeError KTPM ()
+checkM :: FunName -> Expr -> EitherT TypeError MyopiaM ()
 checkM ctx e@(C h gs) = do
     checkM ctx h
     mapM_ (checkM ctx) gs
@@ -76,8 +76,8 @@ runFile fp name = do
     prog <- parseFile fp
     print prog
     let def = funDefs prog M.! name
-        mainArity = runKTPM (arityM def) prog
-    case runKTPM (runEitherT (checkM name def)) prog of
+        mainArity = runMyopiaM (arityM def) prog
+    case runMyopiaM (runEitherT (checkM name def)) prog of
         Left e   -> printError e
         Right () -> do
             traverseWithKey_ (checkTypeDef prog) (typeDefs prog)
@@ -87,6 +87,6 @@ runFile fp name = do
 
 checkTypeDef :: Program -> FunName -> Arity -> IO ()
 checkTypeDef prog fn a =
-    unless (runKTPM (arityM (funDefs prog M.! fn)) prog == a) $ error "Typechecking failed."
+    unless (runMyopiaM (arityM (funDefs prog M.! fn)) prog == a) $ error "Typechecking failed."
 
 -- vim: set ts=4 sw=4 et

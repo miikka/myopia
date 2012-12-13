@@ -1,4 +1,4 @@
-module KTP.REPL where
+module Myopia.REPL where
 
 import           Control.Applicative
 import           Control.Monad
@@ -8,8 +8,8 @@ import           Data.Monoid
 import           System.Console.Haskeline
 import           Text.Parsec
 
-import           KTP.AST
-import           KTP.Parser
+import           Myopia.AST
+import           Myopia.Parser
 
 repl :: IO ()
 repl = runInputT defaultSettings (loop $ mempty)

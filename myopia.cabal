@@ -1,7 +1,7 @@
-name:                ktp
+name:                myopia
 version:             0.1.0.0
 synopsis:            Programming language based on µ-recursive functions
-homepage:            https://github.com/miikka/ktp/
+homepage:            https://github.com/miikka/myopia/
 license:             MIT
 author:              Miikka Koskinen
 maintainer:          miikka.koskinen@iki.fi
@@ -9,8 +9,8 @@ category:            Development
 build-type:          Simple
 cabal-version:       >=1.8
 
-executable ktp
-  main-is:             KTP.hs
+executable myopia
+  main-is:             Myopia.hs
   build-depends:       base ==4.5.*,
                        containers >= 0.5.0.0,
                        either,
