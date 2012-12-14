@@ -70,7 +70,7 @@ eval (FC fn) xs = do
         Just value -> return value
         Nothing -> do
             value <- getDef fn >>= flip eval xs
-            modify $ M.insert (fn, xs) value
+            modify $ SM.insert (fn, xs) value
             return value
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
