@@ -1,10 +1,12 @@
 import           Control.Applicative
 import           Control.Monad
 import qualified Data.Map.Lazy       as M
+import           Text.PrettyPrint.Leijen
 import           System.Environment
 
 import           Myopia.AST
 import           Myopia.Parser       (parseFile)
+import           Myopia.Pretty
 import           Myopia.REPL
 import           Myopia.TypeCheck
 
@@ -17,8 +19,8 @@ main = do
 printError :: TypeError -> IO ()
 printError (ctx, e, msg) = do
     putStrLn $ "Context: " ++ ctx
-    putStrLn $ "Node:    " ++ show e
     putStrLn $ "Message: " ++ msg
+    putStrLn $ "Node:\n" ++ show (indent 4 $ pretty e)
 
 runFile :: FilePath -> String -> IO ()
 runFile fp name = do

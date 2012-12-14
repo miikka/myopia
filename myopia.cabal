@@ -17,4 +17,5 @@ executable myopia
                        haskeline,
                        mtl,
                        parsec >= 3.0.0,
-                       transformers
+                       transformers,
+                       wl-pprint
