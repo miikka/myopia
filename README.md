@@ -113,7 +113,8 @@ Finally we can the define the Fibonacci function:
     -- fib(n) calculates the n-th Fibonacci number
     fib = C(p1, C(P(c6, C(pair, C(p2, I[2,3]), C(plus, C(p2, I[2,3]), C(p1, I[2,3])))), id, id))
 
-Beware: this is very, very slow.
+Beware: this is very, very slow. Implementing the closed-form solution is left
+as an exercise for the reader.
 
 [pm-examples]: http://planetmath.org/?op=getobj&id=11973&from=objects
 [pm-more]: http://planetmath.org/encyclopedia/MoreExamplesOfPrimitiveRecursiveFunctions.html
