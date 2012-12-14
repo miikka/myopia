@@ -74,7 +74,6 @@ printError (ctx, e, msg) = do
 runFile :: FilePath -> String -> IO ()
 runFile fp name = do
     prog <- parseFile fp
-    print prog
     let def = funDefs prog M.! name
         mainArity = runMyopiaM (arityM def) prog
     case runMyopiaM (runEitherT (checkM name def)) prog of
