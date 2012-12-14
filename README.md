@@ -88,8 +88,9 @@ as a powers of primes: `pair(x,y) = 2^x 3^y`.
 
 We also need a way to extract the elements of the pair. This can be done with
 the function `lo` defined below.  For a proper explanation of how these
-functions are derived, see [examples][pm-examples] and [more examples of
-primitive recursive functions][pm-more-examples] on PlanetMath.
+functions are derived, see [examples][pm-examples] and
+[more examples of primitive recursive functions][pm-more-examples] on 
+PlanetMath.
 
     -- rem(x,y) is the remainder of the integer division x/y.
     rem = P(Z, C(mult,C(sgn, I[3,3]), C(mult, C(S, I[2,3]), C(sgn, C(diff, C(S, I[2,3]), I[3,3])))))
