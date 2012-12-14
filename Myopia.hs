@@ -4,31 +4,12 @@ import           Control.Monad.Trans
 import           Control.Monad.Trans.Either
 import           Data.Map.Lazy              (Map)
 import qualified Data.Map.Lazy              as M
-import           Debug.Trace
 import           System.Environment
 import           Text.Printf
 
 import           Myopia.AST
 import           Myopia.Parser              (parseFile)
 import           Myopia.REPL
-
-arity :: Expr -> Integer
-arity Z = 1
-arity S = 1
-arity (I _ k) = k
-arity (C _ gs) = arity (head gs)
-arity (P g _) = arity g + 1
-arity (M f) = arity f - 1
-arity (FC _fn) = undefined
-
-check :: Expr -> Bool
-check Z = True
-check S = True
-check (I _ _) = True
-check (C h gs) = length gs == fromIntegral (arity h) && let ars = map arity gs in all (== head ars) ars
-check (P g h) = arity h == arity g + 2
-check (M f) = arity f > 1
-check (FC _) = True
 
 type TypeError = (FunName, Expr, String)
 
