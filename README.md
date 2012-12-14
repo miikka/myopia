@@ -65,10 +65,68 @@ Multiplication:
 
 Using multiplication, we can calculate factorials.
 
+    c1 = C(S, Z)
+
     fac : N -> N
     fac = C(P(c1, C(mult, I[2,3], C(S, I[1,3]))), id, Z)
 
-*TODO* construct fib.
+Calculating n-th Fibonacci number is the Hello World equivalent of the
+functional programming world, so let's do that.
+
+Because the n-th Fibonacci number is defined in terms of the two previous
+numbers, primitive recursion is not directly applicable. We need a way to pass
+around two numbers at the same time. This can be done by encoding the numbers
+as a powers of primes: `pair(x,y) = 2^x 3^y`.
+
+    -- exp(x,y) = x^y
+    exp : N x N -> N
+    exp = C(P(c1, C(mult, I[2,3], I[3,3])), I[2,2], I[1,2])
+
+    -- pair(x,y) = 2^x 3^y
+    pair : N x N -> N
+    pair = C(mult, C(exp, C(c2, I[1,2]), I[1,2]), C(exp, C(c3, I[2,2]), I[2,2]))
+
+We also need a way to extract the elements of the pair. This can be done with
+the function `lo` defined below.  For a proper explanation of how these
+functions are derived, see [examples][pm-examples] and [more examples of
+primitive recursive functions][pm-more-examples] on PlanetMath.
+
+    -- rem(x,y) is the remainder of the integer division x/y.
+    rem = P(Z, C(mult,C(sgn, I[3,3]), C(mult, C(S, I[2,3]), C(sgn, C(diff, C(S, I[2,3]), I[3,3])))))
+
+    -- div(x,y)=1 if y divides x, otherwise div(x,y)=0.
+    div = C(minus, C(c1, I[1,2]), C(sgn, C(rem, I[1,2], I[2,2])))
+
+    -- if lo(x,y)=z, z is the largest number for which x^z divides y.
+    lo : N x N -> N
+    lo = M(C(and, C(div, I[3,3], C(exp, I[2,3], I[1,3])), C(div, I[3,3], C(exp, I[2,3], C(S, I[1,3])))))
+
+    -- projection functions for pairs. p1(pair(x,y)) = x, p2(pair(x,y)) = y.
+    p1 = C(lo, c2, id)
+    p2 = C(lo, c3, id)
+
+Finally we can the define the Fibonacci function:
+
+    c6 = C(double, c3)
+
+    -- fib(n) calculates the n-th Fibonacci number
+    fib = C(p1, C(P(c6, C(pair, C(p2, I[2,3]), C(plus, C(p2, I[2,3]), C(p1, I[2,3])))), id, id))
+
+Beware: this is very, very slow.
+
+[pm-examples]: http://planetmath.org/?op=getobj&id=11973&from=objects
+[pm-more]: http://planetmath.org/encyclopedia/MoreExamplesOfPrimitiveRecursiveFunctions.html
+
+
+## Reading material
+
+These two pages show how many basic functions can be implemented using
+primitive recursion and bounded minimalisation. (Myopia does not have a
+primitive for bounded minimalisation, but it can be implemented in terms of
+primitive recursion or minimalisation.)
+
+* Chi Woo: [examples of primitive recursive functions][pm-examples]. PlanetMath.org
+* Chi Woo: [more examples of primitive recursive functions][pm-more]. PlanetMath.org
 
 ## Further work
 
