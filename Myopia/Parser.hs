@@ -1,6 +1,7 @@
 module Myopia.Parser where
 
 import           Control.Applicative ((<$>))
+import           Control.Lens
 import           Control.Monad
 import           Data.Char
 import qualified Data.Map            as M
@@ -90,8 +91,8 @@ program = do
     eof
     return . mconcat . map defToProgram $ defs
   where
-    defToProgram (TypeDef fn ar) = mempty { typeDefs = M.singleton fn ar }
-    defToProgram (FunDef fn ex)  = mempty { funDefs = M.singleton fn ex }
+    defToProgram (TypeDef fn ar) = mempty & typeDefs .~ M.singleton fn ar
+    defToProgram (FunDef fn ex)  = mempty & funDefs .~ M.singleton fn ex
 
 parseFile :: FilePath -> IO Program
 parseFile fp = do

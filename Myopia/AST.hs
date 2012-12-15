@@ -1,11 +1,13 @@
-{-# LANGUAGE ViewPatterns #-}
+{-# LANGUAGE TemplateHaskell, ViewPatterns #-}
 module Myopia.AST where
 
 import           Control.Applicative
+import           Control.Lens
 import           Control.Monad.RWS
 import           Data.Map            (Map)
 import qualified Data.Map            as M
 import qualified Data.Map.Strict     as SM
+import           Data.Maybe          (fromJust)
 
 import           Debug.Trace
 
@@ -23,9 +25,11 @@ type Arity = Integer
 type Fun = Expr
 
 data Program = Program
-    { funDefs  :: Map FunName Fun
-    , typeDefs :: Map FunName Arity
+    { _funDefs  :: Map FunName Fun
+    , _typeDefs :: Map FunName Arity
     } deriving (Show)
+
+makeLenses ''Program
 
 instance Monoid Program where
     mempty = Program mempty mempty
@@ -43,7 +47,7 @@ arityM (M f) = pred <$> arityM f
 arityM (FC fn) = getDef fn >>= arityM
 
 getDef :: FunName -> MyopiaM Expr
-getDef fn = asks ((M.! fn) . funDefs)
+getDef fn = fromJust <$> view (funDefs.at fn)
 
 runMyopiaM :: MyopiaM a -> Program -> a
 runMyopiaM f prog = fst $ evalRWS f prog M.empty
@@ -65,16 +69,16 @@ eval (P g h) ((pred -> y):xs) = do
 eval (M f) xs = minimize f xs 0
 eval (FC "bottom") _xs = error "Function \"bottom\" called."
 eval (FC fn) xs = do
-    memoizedValue <- gets (SM.lookup (fn, xs))
+    memoizedValue <- use $ at (fn, xs)
     case memoizedValue of
         Just value -> return value
         Nothing -> do
             value <- getDef fn >>= flip eval xs
-            modify $ SM.insert (fn, xs) value
+            at (fn,xs) ?= value
             return value
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
-runProgram prog fn params = runMyopiaM (eval (funDefs prog M.! fn) params) prog
+runProgram prog fn params = runMyopiaM (eval (fromJust $ prog^.funDefs.at fn) params) prog
 
 minimize :: Expr -> [Integer] -> Integer -> MyopiaM Integer
 minimize f xs z = do

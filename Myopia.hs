@@ -1,5 +1,6 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 import           Control.Applicative
+import           Control.Lens
 import           Control.Monad
 import qualified Data.Map.Lazy                   as M
 import           System.Console.CmdArgs.Implicit
@@ -37,10 +38,10 @@ printError (ctx, e, msg) = do
     putStrLn $ "Message: " ++ msg
     putStrLn $ "Node:\n" ++ show (indent 4 $ pretty e)
 
-runFile :: FilePath -> String -> IO ()
+runFile :: FilePath -> FunName -> IO ()
 runFile fp name = do
     prog <- parseFile fp
-    case M.lookup name (funDefs prog) of
+    case prog ^. funDefs.at name of
         Nothing -> error $ "No such function: " ++ name
         Just def -> do
             let mainArity = runMyopiaM (arityM def) prog

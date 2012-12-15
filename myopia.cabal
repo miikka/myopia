@@ -16,6 +16,7 @@ executable myopia
                        containers >= 0.5.0.0,
                        either,
                        haskeline,
+                       lens,
                        mtl,
                        parsec >= 3.0.0,
                        transformers,

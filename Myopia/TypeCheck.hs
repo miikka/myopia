@@ -1,6 +1,7 @@
 module Myopia.TypeCheck where
 
 import           Control.Applicative
+import           Control.Lens
 import           Control.Monad              (unless)
 import           Control.Monad.RWS          (asks)
 import           Control.Monad.Trans        (lift)
@@ -40,7 +41,7 @@ checkArity _ _ = return ()
 
 checkTypeDef :: FunName -> Expr -> TypeCheckM ()
 checkTypeDef fn def = do
-    typeDef_ <- lift $ asks $ M.lookup fn . typeDefs
+    typeDef_ <- lift $ view (typeDefs.at fn)
     case typeDef_ of
         Nothing -> return ()
         Just typeDef -> do
@@ -60,6 +61,6 @@ traverseKeys_ :: Applicative t => (k -> t ()) -> Map k a -> t ()
 traverseKeys_ f m = M.traverseWithKey (\k _ -> f k *> pure ()) m *> pure ()
 
 typeCheck :: Program -> Either TypeError ()
-typeCheck = runTypeCheckM $ lift (asks funDefs) >>= traverseKeys_ checkFunction
+typeCheck = runTypeCheckM $ lift (view funDefs) >>= traverseKeys_ checkFunction
 
 -- vim: set ts=4 sw=4 et

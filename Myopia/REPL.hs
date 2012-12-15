@@ -1,6 +1,7 @@
 module Myopia.REPL where
 
 import           Control.Applicative
+import           Control.Lens
 import           Control.Monad
 import           Control.Monad.IO.Class
 import qualified Data.Map                 as M
@@ -29,7 +30,7 @@ runCommand :: String -> [String] -> Program -> InputT IO Program
 runCommand "d" args prog =
     case parse def "<repl>" (unwords args) of
         Left err -> liftIO (print err) >> return prog
-        Right (FunDef n d) -> return $ prog { funDefs = M.insert n d (funDefs prog) }
+        Right (FunDef n d) -> return $ prog & funDefs . at n ?~ d
 runCommand "e" [name] prog = do
     let arity = getArity prog name
     liftIO $ putStrLn $ "Expecting " ++ show arity ++ " parameters."
