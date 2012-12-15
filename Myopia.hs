@@ -1,17 +1,14 @@
 {-# LANGUAGE DeriveDataTypeable #-}
-import           Control.Applicative
-import           Control.Lens
-import           Control.Monad
-import qualified Data.Map.Lazy                   as M
-import           System.Console.CmdArgs.Implicit
-import           System.Environment
-import           Text.PrettyPrint.Leijen
+import Control.Lens
+import Control.Monad                   (forM, liftM)
+import System.Console.CmdArgs.Implicit
+import Text.PrettyPrint.Leijen
 
-import           Myopia.AST
-import           Myopia.Parser                   (parseFile)
-import           Myopia.Pretty
-import           Myopia.REPL
-import           Myopia.TypeCheck
+import Myopia.AST
+import Myopia.Parser                   (parseFile)
+import Myopia.Pretty
+import Myopia.REPL
+import Myopia.TypeCheck                (TypeError, typeCheck)
 
 data Myopia = Run { file :: FilePath , function :: FunName }
             | Repl deriving (Show, Data, Typeable)

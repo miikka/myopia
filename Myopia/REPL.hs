@@ -2,12 +2,12 @@ module Myopia.REPL where
 
 import           Control.Applicative
 import           Control.Lens
-import           Control.Monad
+import           Control.Monad            (forM)
 import           Control.Monad.IO.Class
 import qualified Data.Map                 as M
-import           Data.Monoid
+import           Data.Monoid              (mempty)
 import           System.Console.Haskeline
-import           Text.Parsec
+import           Text.Parsec              (parse)
 
 import           Myopia.AST
 import           Myopia.Parser

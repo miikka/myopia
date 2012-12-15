@@ -2,10 +2,10 @@ module Myopia.Parser where
 
 import           Control.Applicative ((<$>))
 import           Control.Lens
-import           Control.Monad
+import           Control.Monad       (void)
 import           Data.Char
 import qualified Data.Map            as M
-import           Data.Monoid
+import           Data.Monoid         (mconcat, mempty)
 import           Text.Parsec
 import           Text.Parsec.String
 
