@@ -17,7 +17,7 @@ repl = runInputT defaultSettings (loop $ mempty)
   where
     loop :: Program -> InputT IO ()
     loop prog = do
-        minput <- getInputLine "κ> "
+        minput <- getInputLine "µ> "
         case minput of
             Nothing -> return ()
             Just "quit" -> return ()
