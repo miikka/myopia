@@ -1,20 +1,35 @@
+{-# LANGUAGE DeriveDataTypeable #-}
 import           Control.Applicative
 import           Control.Monad
-import qualified Data.Map.Lazy       as M
-import           Text.PrettyPrint.Leijen
+import qualified Data.Map.Lazy                   as M
+import           System.Console.CmdArgs.Implicit
 import           System.Environment
+import           Text.PrettyPrint.Leijen
 
 import           Myopia.AST
-import           Myopia.Parser       (parseFile)
+import           Myopia.Parser                   (parseFile)
 import           Myopia.Pretty
 import           Myopia.REPL
 import           Myopia.TypeCheck
 
+data Myopia = Run { file :: FilePath , function :: FunName }
+            | Repl deriving (Show, Data, Typeable)
+
+myopia = modes [run &= auto, repl]
+         &= summary "Myopia v. 0.1.0.0 <https://github.com/miikka/myopia/>"
+  where
+    run = Run
+          { file = def &= argPos 0 &= typ "FILE"
+          , function = def &= argPos 1 &= typ "FUNCTION" &= opt "main"
+          } &= details ["Evaluate a function from a file."]
+    repl = Repl &= details ["Start an interactive Myopia session."]
 
 main :: IO ()
 main = do
-    (fp : name : _) <- getArgs
-    if fp == "repl" then repl else runFile fp name
+    mode <- cmdArgs myopia
+    case mode of
+        Repl -> repl
+        opts@(Run {}) -> runFile (file opts) (function opts)
 
 printError :: TypeError -> IO ()
 printError (ctx, e, msg) = do
