@@ -26,6 +26,7 @@ type FunName = String
 type Arity = Integer
 type Fun = Expr
 type Builtin m = [Integer] -> m Integer
+type BuiltinMap m = Map FunName (Builtin m)
 
 data Program = Program
     { _funDefs  :: Map FunName Fun
@@ -40,14 +41,14 @@ instance Monoid Program where
 
 data Env m = Env
     { _program :: Program
-    , _builtins :: Map FunName (Builtin m)
+    , _builtins :: BuiltinMap m
     }
 
 makeLenses ''Env
 
 emptyEnv = Env { _program = mempty, _builtins = mempty }
 
-builtin :: FunName -> SimpleLens Env (Maybe Builtin)
+builtin :: FunName -> SimpleLens (Env m) (Maybe (Builtin m))
 builtin fn = builtins.at fn
 
 type MemoMap = SM.Map (FunName, [Integer]) Integer
@@ -63,10 +64,10 @@ arityM (P g _) = succ <$> arityM g
 arityM (M f) = pred <$> arityM f
 arityM (FC fn) = getDef fn >>= arityM
 
-funDef :: FunName -> SimpleLens Env (Maybe Fun)
+funDef :: FunName -> SimpleLens (Env m) (Maybe Fun)
 funDef fn = program.funDefs.at fn
 
-typeDef :: FunName -> SimpleLens Env (Maybe Arity)
+typeDef :: FunName -> SimpleLens (Env m) (Maybe Arity)
 typeDef fn = program.typeDefs.at fn
 
 getDef :: (Functor m, Monad m) => FunName -> MyopiaT m Expr
@@ -77,6 +78,9 @@ runMyopiaM f prog = fst $ evalRWS f (emptyEnv & program .~ prog) SM.empty
 
 runMyopiaT :: (Functor m, Monad m) => MyopiaT m a -> Program -> m a
 runMyopiaT f prog = fst <$> evalRWST f (emptyEnv & program .~ prog) SM.empty
+
+runMyopiaT' :: (Functor m, Monad m) => BuiltinMap m -> MyopiaT m a -> Program -> m a
+runMyopiaT' bm f prog = fst <$> evalRWST f (Env { _program = prog, _builtins = bm }) SM.empty
 
 getArity :: Program -> FunName -> Integer
 getArity prog fn = runMyopiaM (getDef fn >>= arityM) prog

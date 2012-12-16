@@ -10,7 +10,9 @@ import Myopia.Pretty
 import Myopia.REPL
 import Myopia.TypeCheck                (TypeError, typeCheck)
 
-data Myopia = Run { file :: FilePath , function :: FunName }
+data Myopia = Run { file           :: FilePath
+                  , function       :: FunName
+                  , enableBuiltins :: Bool }
             | Repl deriving (Show, Data, Typeable)
 
 myopia = modes [run &= auto, repl]
@@ -19,6 +21,8 @@ myopia = modes [run &= auto, repl]
     run = Run
           { file = def &= argPos 0 &= typ "FILE"
           , function = def &= argPos 1 &= typ "FUNCTION" &= opt "main"
+          , enableBuiltins = False &= explicit "builtins"
+            &= help "Enable Haskell implementations of some functions."
           } &= details ["Evaluate a function from a file."]
     repl = Repl &= details ["Start an interactive Myopia session."]
 
@@ -48,6 +52,5 @@ runFile fp name = do
                     putStrLn $ "Expecting " ++ show mainArity ++ " parameters."
                     params <- forM [1..mainArity] (\_ -> liftM read getLine)
                     print $ runProgram prog name params
-
 
 -- vim: set ts=4 sw=4 et
