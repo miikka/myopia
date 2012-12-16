@@ -41,7 +41,7 @@ checkArity _ _ = return ()
 
 checkTypeDef :: FunName -> Expr -> TypeCheckM ()
 checkTypeDef fn def = do
-    typeDef_ <- lift $ view (typeDefs.at fn)
+    typeDef_ <- lift $ view (typeDef fn)
     case typeDef_ of
         Nothing -> return ()
         Just typeDef -> do
@@ -61,6 +61,6 @@ traverseKeys_ :: Applicative t => (k -> t ()) -> Map k a -> t ()
 traverseKeys_ f m = M.traverseWithKey (\k _ -> f k *> pure ()) m *> pure ()
 
 typeCheck :: Program -> Either TypeError ()
-typeCheck = runTypeCheckM $ lift (view funDefs) >>= traverseKeys_ checkFunction
+typeCheck = runTypeCheckM $ lift (view $ program.funDefs) >>= traverseKeys_ checkFunction
 
 -- vim: set ts=4 sw=4 et

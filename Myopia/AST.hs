@@ -4,9 +4,11 @@ module Myopia.AST where
 import           Control.Applicative
 import           Control.Lens
 import           Control.Monad.RWS
+import              Data.Functor.Identity (Identity)
 import           Data.Map            (Map)
 import qualified Data.Map            as M
-import qualified Data.Map.Strict     as SM
+import qualified Data.Map            as SM
+--import qualified Data.Map.Strict     as SM
 import           Data.Maybe          (fromJust)
 
 import           Debug.Trace
@@ -23,6 +25,7 @@ data Expr = Z
 type FunName = String
 type Arity = Integer
 type Fun = Expr
+type Builtin m = [Integer] -> m Integer
 
 data Program = Program
     { _funDefs  :: Map FunName Fun
@@ -35,9 +38,23 @@ instance Monoid Program where
     mempty = Program mempty mempty
     mappend (Program a1 b1) (Program a2 b2) = Program (a1 <> a2) (b1 <> b2)
 
-type MyopiaM = RWS Program () (SM.Map (FunName, [Integer]) Integer)
+data Env m = Env
+    { _program :: Program
+    , _builtins :: Map FunName (Builtin m)
+    }
 
-arityM :: Expr -> MyopiaM Integer
+makeLenses ''Env
+
+emptyEnv = Env { _program = mempty, _builtins = mempty }
+
+builtin :: FunName -> SimpleLens Env (Maybe Builtin)
+builtin fn = builtins.at fn
+
+type MemoMap = SM.Map (FunName, [Integer]) Integer
+type MyopiaT m = RWST (Env m) () MemoMap m
+type MyopiaM = MyopiaT Identity
+
+arityM :: (Functor m, Monad m) => Expr -> MyopiaT m Integer
 arityM Z = return 1
 arityM S = return 1
 arityM (I _ k) = return k
@@ -46,16 +63,25 @@ arityM (P g _) = succ <$> arityM g
 arityM (M f) = pred <$> arityM f
 arityM (FC fn) = getDef fn >>= arityM
 
-getDef :: FunName -> MyopiaM Expr
-getDef fn = fromJust <$> view (funDefs.at fn)
+funDef :: FunName -> SimpleLens Env (Maybe Fun)
+funDef fn = program.funDefs.at fn
+
+typeDef :: FunName -> SimpleLens Env (Maybe Arity)
+typeDef fn = program.typeDefs.at fn
+
+getDef :: (Functor m, Monad m) => FunName -> MyopiaT m Expr
+getDef fn = fromJust <$> view (funDef fn)
 
 runMyopiaM :: MyopiaM a -> Program -> a
-runMyopiaM f prog = fst $ evalRWS f prog M.empty
+runMyopiaM f prog = fst $ evalRWS f (emptyEnv & program .~ prog) SM.empty
+
+runMyopiaT :: (Functor m, Monad m) => MyopiaT m a -> Program -> m a
+runMyopiaT f prog = fst <$> evalRWST f (emptyEnv & program .~ prog) SM.empty
 
 getArity :: Program -> FunName -> Integer
 getArity prog fn = runMyopiaM (getDef fn >>= arityM) prog
 
-eval :: Expr -> [Integer] -> MyopiaM Integer
+eval :: (Functor m, Monad m) => Expr -> [Integer] -> MyopiaT m Integer
 -- showing only the first param to prevent evaling bottom
 eval e p | trace ("eval " ++ show e ++ " [" ++ show (head p) ++ ",…]" ) False = undefined
 eval Z [_] = return 0
@@ -78,9 +104,9 @@ eval (FC fn) xs = do
             return value
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
-runProgram prog fn params = runMyopiaM (eval (fromJust $ prog^.funDefs.at fn) params) prog
+runProgram prog fn params = runMyopiaM (getDef fn >>= flip eval params) prog
 
-minimize :: Expr -> [Integer] -> Integer -> MyopiaM Integer
+minimize :: (Functor m, Monad m) => Expr -> [Integer] -> Integer -> MyopiaT m Integer
 minimize f xs z = do
     yz <- eval f (z:xs)
     if yz == 0 then return z else minimize f xs (z+1)

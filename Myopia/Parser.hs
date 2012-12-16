@@ -84,8 +84,8 @@ linespace = skipMany $ oneOf " \t"
 linebreak :: Parser ()
 linebreak = linespace >> optional comment >> newline >> commentSpaces
 
-program :: Parser Program
-program = do
+programParser :: Parser Program
+programParser = do
     commentSpaces
     defs <- (try typedefParser <|> def) `sepEndBy1` linebreak
     eof
@@ -96,7 +96,7 @@ program = do
 
 parseFile :: FilePath -> IO Program
 parseFile fp = do
-    result <- parseFromFile program fp
+    result <- parseFromFile programParser fp
     case result of
         Left err -> error $ show err
         Right expr -> return expr
