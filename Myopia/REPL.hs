@@ -10,6 +10,7 @@ import           System.Console.Haskeline
 import           Text.Parsec              (parse)
 
 import           Myopia.AST
+import           Myopia.Eval
 import           Myopia.Parser
 
 repl :: IO ()

@@ -5,6 +5,7 @@ import System.Console.CmdArgs.Implicit
 import Text.PrettyPrint.Leijen
 
 import Myopia.AST
+import Myopia.Eval
 import Myopia.Parser                   (parseFile)
 import Myopia.Pretty
 import Myopia.REPL
@@ -21,7 +22,7 @@ myopia = modes [run &= auto, repl]
     run = Run
           { file = def &= argPos 0 &= typ "FILE"
           , function = def &= argPos 1 &= typ "FUNCTION" &= opt "main"
-          , enableBuiltins = False &= explicit "builtins"
+          , enableBuiltins = False &= explicit &= name "builtins"
             &= help "Enable Haskell implementations of some functions."
           } &= details ["Evaluate a function from a file."]
     repl = Repl &= details ["Start an interactive Myopia session."]
