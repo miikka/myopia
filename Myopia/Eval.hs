@@ -44,6 +44,9 @@ runProgram prog fn params = runMyopiaM (getDef fn >>= flip eval params) prog
 runProgram' :: BuiltinMap Identity -> Program -> FunName -> [Integer] -> Integer
 runProgram' bm prog fn params = runIdentity $ runMyopiaT' bm (getDef fn >>= flip eval params) prog
 
+runProgram'' :: (Functor m, Monad m) => BuiltinMap m -> Program -> FunName -> [Integer] -> m Integer
+runProgram'' bm prog fn params = runMyopiaT' bm (getDef fn >>= flip eval params) prog
+
 minimize :: (Functor m, Monad m) => Expr -> [Integer] -> Integer -> MyopiaT m Integer
 minimize f xs z = do
     yz <- eval f (z:xs)

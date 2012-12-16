@@ -66,3 +66,41 @@ id1 = C(p1, pair)
 id2 = C(p2, pair)
 
 fib = C(p1, C(P(c6, C(pair, C(p2, I[2,3]), C(plus, C(p2, I[2,3]), C(p1, I[2,3])))), id, id))
+
+c4 = C(S, c3)
+c5 = C(S, c4)
+c6 = C(S, c5)
+c7 = C(S, c6)
+c8 = C(S, c7)
+c9 = C(S, c8)
+c10 = C(S, c9)
+c11 = C(S, c10)
+c12 = C(S, c11)
+c32 = C(mult, c4, c8)
+c33 = C(S, c32)
+c72 = C(mult, c8, c9)
+c100 = C(mult, c10, c10)
+c101 = C(S, c100)
+c108 = C(plus, c100, c8)
+c111 = C(S, C(plus, c100, c10))
+c114 = C(plus, c111, c3)
+c119 = C(plus, c111, c8)
+
+eq = C(not, C(diff, I[1,2], I[2,2]))
+
+plus13 = C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, I[1,13], I[2,13]), I[3,13]), I[4,13]), I[5,13]), I[6,13]), I[7,13]), I[8,13]), I[9,13]), I[10,13]), I[11,13]), I[12,13]), I[13,13])
+hw : N -> N
+hw = C(plus13,
+        C(mult, C(eq,  Z, id), c72),
+        C(mult, C(eq, c1, id), c101),
+        C(mult, C(eq, c2, id), c108),
+        C(mult, C(eq, c3, id), c108),
+        C(mult, C(eq, c4, id), c111),
+        C(mult, C(eq, c5, id), c32),
+        C(mult, C(eq, c6, id), c119),
+        C(mult, C(eq, c7, id), c111),
+        C(mult, C(eq, c8, id), c114),
+        C(mult, C(eq, c9, id), c108),
+        C(mult, C(eq,c10, id), c100),
+        C(mult, C(eq,c11, id), c33),
+        C(mult, C(eq,c12, id), c10))

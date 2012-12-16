@@ -58,7 +58,9 @@ typeDef :: FunName -> SimpleLens (Env m) (Maybe Arity)
 typeDef fn = program.typeDefs.at fn
 
 getDef :: (Functor m, Monad m) => FunName -> MyopiaT m Expr
-getDef fn = fromJust <$> view (funDef fn)
+getDef fn = view (funDef fn) >>= \x -> case x of
+    Nothing -> error $ "Function " ++ fn ++ " not found."
+    Just def -> return def
 
 runMyopiaM :: MyopiaM a -> Program -> a
 runMyopiaM f prog = fst $ evalRWS f (emptyEnv & program .~ prog) SM.empty

@@ -1,6 +1,8 @@
 {-# LANGUAGE DeriveDataTypeable #-}
 import Control.Lens
 import Control.Monad                   (forM, liftM)
+import Data.Char                       (chr)
+import Data.Monoid                     (mappend)
 import System.Console.CmdArgs.Implicit
 import Text.PrettyPrint.Leijen
 
@@ -14,7 +16,9 @@ import Myopia.TypeCheck                (TypeError, typeCheck)
 
 data Myopia = Run { file           :: FilePath
                   , function       :: FunName
-                  , enableBuiltins :: Bool }
+                  , enableBuiltins :: Bool
+                  , enableIO       :: Bool
+                  }
             | Repl deriving (Show, Data, Typeable)
 
 myopia = modes [run &= auto, repl]
@@ -25,6 +29,8 @@ myopia = modes [run &= auto, repl]
           , function = def &= argPos 1 &= typ "FUNCTION" &= opt "main"
           , enableBuiltins = False &= explicit &= name "builtins"
             &= help "Enable Haskell implementations of some functions."
+          , enableIO = False &= explicit &= name "io"
+            &= help "Enable IO mode."
           } &= details ["Evaluate a function from a file."]
     repl = Repl &= details ["Start an interactive Myopia session."]
 
@@ -49,12 +55,26 @@ runFile opts = do
         Nothing -> error $ "No such function: " ++ name
         Just def -> do
             let mainArity = runMyopiaM (arityM def) prog
-                bm = if enableBuiltins opts then pureBuiltins else emptyBuiltins
             case typeCheck prog of
                 Left e   -> printError e
                 Right () -> do
-                    putStrLn $ "Expecting " ++ show mainArity ++ " parameters."
-                    params <- forM [1..mainArity] (\_ -> liftM read getLine)
-                    print $ runProgram' bm prog name params
+                    case enableIO opts of
+                        True -> do
+                            let bm = if enableBuiltins opts then pureBuiltins `mappend` ioBuiltins else emptyBuiltins
+                            runIO opts prog bm 0
+                        False -> do
+                            let bm = if enableBuiltins opts then pureBuiltins else emptyBuiltins
+                            putStrLn $ "Expecting " ++ show mainArity ++ " parameters."
+                            params <- forM [1..mainArity] (\_ -> liftM read getLine)
+                            print $ runProgram' bm prog name params
+
+runIO :: Myopia -> Program -> BuiltinMap IO -> Integer -> IO ()
+runIO opts prog bm n = do
+    v <- runProgram'' bm prog (function opts) [n]
+    case v of
+        0 -> return ()
+        v -> do
+            putChar $ chr (fromIntegral v)
+            runIO opts prog bm (succ n)
 
 -- vim: set ts=4 sw=4 et
