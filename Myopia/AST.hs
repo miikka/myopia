@@ -1,13 +1,13 @@
-{-# LANGUAGE TemplateHaskell, ViewPatterns #-}
+{-# LANGUAGE TemplateHaskell #-}
 module Myopia.AST where
 
 import           Control.Applicative
 import           Control.Lens
 import           Control.Monad.RWS
-import              Data.Functor.Identity (Identity)
-import           Data.Map            (Map)
-import qualified Data.Map            as SM
-import           Data.Maybe          (fromJust)
+import           Data.Functor.Identity (Identity)
+import           Data.Map              (Map)
+import qualified Data.Map              as SM
+import           Data.Maybe            (fromJust)
 
 data Expr = Z
           | S
@@ -36,7 +36,7 @@ instance Monoid Program where
     mappend (Program a1 b1) (Program a2 b2) = Program (a1 <> a2) (b1 <> b2)
 
 data Env m = Env
-    { _program :: Program
+    { _program  :: Program
     , _builtins :: BuiltinMap m
     }
 

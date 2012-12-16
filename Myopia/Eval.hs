@@ -1,16 +1,20 @@
 {-# LANGUAGE ViewPatterns #-}
 module Myopia.Eval where
 
-import Control.Applicative ((<$>))
+import Control.Applicative
 import Control.Lens
+import Control.Monad.Trans   (lift)
+import Data.Functor.Identity (Identity (..))
 
 import Debug.Trace
 
 import Myopia.AST
 
 eval :: (Functor m, Monad m) => Expr -> [Integer] -> MyopiaT m Integer
+{-
 -- showing only the first param to prevent evaling bottom
 eval e p | trace ("eval " ++ show e ++ " [" ++ show (head p) ++ ",…]" ) False = undefined
+-}
 eval Z [_] = return 0
 eval S [x] = return $ x + 1
 eval (I i _) xs = return $ xs !! (i - 1)
@@ -26,12 +30,19 @@ eval (FC fn) xs = do
     case memoizedValue of
         Just value -> return value
         Nothing -> do
-            value <- getDef fn >>= flip eval xs
-            at (fn,xs) ?= value
-            return value
+            bf_ <- view $ builtin fn
+            case bf_ of
+                Just bf -> lift $ bf xs
+                Nothing -> do
+                    value <- getDef fn >>= flip eval xs
+                    at (fn,xs) ?= value
+                    return value
 
 runProgram :: Program -> FunName -> [Integer] -> Integer
 runProgram prog fn params = runMyopiaM (getDef fn >>= flip eval params) prog
+
+runProgram' :: BuiltinMap Identity -> Program -> FunName -> [Integer] -> Integer
+runProgram' bm prog fn params = runIdentity $ runMyopiaT' bm (getDef fn >>= flip eval params) prog
 
 minimize :: (Functor m, Monad m) => Expr -> [Integer] -> Integer -> MyopiaT m Integer
 minimize f xs z = do
