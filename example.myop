@@ -104,3 +104,10 @@ hw = C(plus13,
         C(mult, C(eq,c10, id), c100),
         C(mult, C(eq,c11, id), c33),
         C(mult, C(eq,c12, id), c10))
+
+-- placeholders for IO buildins
+ioChar = id
+trace = id
+
+cat : N -> N
+cat = ioChar

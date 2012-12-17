@@ -1,5 +1,6 @@
 module Myopia.Builtins where
 
+import Data.Char (ord)
 import qualified Data.Map   as M
 
 import           Myopia.AST
@@ -13,8 +14,14 @@ pureBuiltins = M.map (return .) $  M.fromList
     ,("div", \[x,y] -> if x `mod` y == 0 then 1 else 0)
     ]
 
-ioBuiltins :: BuiltinMap IO
-ioBuiltins = M.fromList
-    [("trace", \l@(x:_) -> print l >> return x)]
+ioBuiltins :: IO (BuiltinMap IO)
+ioBuiltins = do
+    input <- getContents
+    return $ M.fromList
+        [("trace", \l@(x:_) -> print l >> return x)
+        ,("ioChar", \[x] -> return . fi . ord $ input !! fi x)]
+  where
+    fi :: (Integral a, Num b) => a -> b
+    fi = fromIntegral
 
 -- vim: set ts=4 sw=4 et

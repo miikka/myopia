@@ -2,7 +2,7 @@
 import Control.Lens
 import Control.Monad                   (forM, liftM)
 import Data.Char                       (chr)
-import Data.Monoid                     (mappend)
+import Data.Monoid                     (mappend, mempty)
 import System.Console.CmdArgs.Implicit
 import Text.PrettyPrint.Leijen
 
@@ -60,7 +60,8 @@ runFile opts = do
                 Right () -> do
                     case enableIO opts of
                         True -> do
-                            let bm = if enableBuiltins opts then pureBuiltins `mappend` ioBuiltins else emptyBuiltins
+                            ioBm <- ioBuiltins
+                            let bm = ioBm `mappend` if enableBuiltins opts then pureBuiltins else mempty
                             runIO opts prog bm 0
                         False -> do
                             let bm = if enableBuiltins opts then pureBuiltins else emptyBuiltins
