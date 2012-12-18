@@ -4,6 +4,7 @@ import Control.Monad                   (forM, liftM)
 import Data.Char                       (chr)
 import Data.Monoid                     (mappend, mempty)
 import System.Console.CmdArgs.Implicit
+import System.IO                       (hFlush, stdout)
 import Text.PrettyPrint.Leijen
 
 import Myopia.AST
@@ -76,6 +77,7 @@ runIO opts prog bm n = do
         0 -> return ()
         v -> do
             putChar $ chr (fromIntegral v)
+            hFlush stdout
             runIO opts prog bm (succ n)
 
 -- vim: set ts=4 sw=4 et

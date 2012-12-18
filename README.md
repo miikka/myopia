@@ -133,6 +133,21 @@ as an exercise for the reader.
 [pm-more]: http://planetmath.org/encyclopedia/MoreExamplesOfPrimitiveRecursiveFunctions.html
 
 
+## Input and output
+
+Myopia has an IO mode, which can be enabled with the switch `--io`. It can be
+used with functions of type `N -> N`. The result of function `f(n)` is
+considered to be the n-th output byte. You also get access to primitive
+function `ioChar : N -> N`, which returns you the n-th input byte.
+
+For example, copying input to output can be implemented like this:
+
+    cat : N -> N
+    cat = ioChar
+
+Implementing interactive programs might be tricky, because there are no
+guarantees for evaluation order.
+
 ## Reading material
 
 These two pages show how many basic functions can be implemented using

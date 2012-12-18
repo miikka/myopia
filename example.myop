@@ -81,14 +81,17 @@ c26 = C(double, c13)
 c32 = C(mult, c4, c8)
 c33 = C(S, c32)
 c52 = C(mult, c4, c13)
+c63 = C(mult, c7, c9)
 c65 = C(S, C(double, c32))
 c72 = C(mult, c8, c9)
+c78 = C(mult, c6, c13)
 c84 = C(mult, c7, c12)
 c90 = C(mult, c9, c10)
 c97 = C(plus, c7, c90)
 c100 = C(mult, c10, c10)
 c101 = C(S, c100)
 c108 = C(plus, c100, c8)
+c109 = C(S, c108)
 c111 = C(S, C(plus, c100, c10))
 c114 = C(plus, c111, c3)
 c119 = C(plus, c111, c8)
@@ -96,6 +99,7 @@ c122 = C(plus, c3, c119)
 
 eq = C(not, C(diff, I[1,2], I[2,2]))
 
+plus7 = C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, I[1,7], I[2,7]), I[3,7]), I[4,7]), I[5,7]), I[6,7]), I[7,7])
 plus13 = C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, C(plus, I[1,13], I[2,13]), I[3,13]), I[4,13]), I[5,13]), I[6,13]), I[7,13]), I[8,13]), I[9,13]), I[10,13]), I[11,13]), I[12,13]), I[13,13])
 hw : N -> N
 hw = C(plus13,
@@ -137,3 +141,20 @@ rot13 = C(C(plus,
                   C(not, C(or, C(between, id, c65, c90), C(between, id, c97, c122))),
                   id))),
           ioChar)
+
+-- an interactive program!
+askname : N -> N
+askname = C(plus13,
+              C(mult, C(eq,  Z, id), c78),
+              C(mult, C(eq, c1, id), c97),
+              C(mult, C(eq, c2, id), c109),
+              C(mult, C(eq, c3, id), c101),
+              C(mult, C(eq, c4, id), c63),
+              C(mult, C(eq, c5, id), c32),
+              C(mult, C(eq, c6, id), c72),
+              C(mult, C(eq, c7, id), c101),
+              C(mult, C(eq, c8, id), c108),
+              C(mult, C(eq, c9, id), c108),
+              C(mult, C(eq,c10, id), c111),
+              C(mult, C(eq,c11, id), c32),
+              C(mult, C(lt,c11, id), C(ioChar, C(minus, id, c12))))
