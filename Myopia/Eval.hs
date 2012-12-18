@@ -6,15 +6,9 @@ import Control.Lens
 import Control.Monad.Trans   (lift)
 import Data.Functor.Identity (Identity (..))
 
-import Debug.Trace
-
 import Myopia.AST
 
 eval :: (Functor m, Monad m) => Expr -> [Integer] -> MyopiaT m Integer
-{-
--- showing only the first param to prevent evaling bottom
-eval e p | trace ("eval " ++ show e ++ " [" ++ show (head p) ++ ",…]" ) False = undefined
--}
 eval Z [_] = return 0
 eval S [x] = return $ x + 1
 eval (I i _) xs = return $ xs !! (i - 1)
