@@ -3,6 +3,7 @@ version:             0.1.0.0
 synopsis:            Programming language based on µ-recursive functions
 homepage:            https://github.com/miikka/myopia/
 license:             MIT
+license-file:        LICENSE
 author:              Miikka Koskinen
 maintainer:          miikka.koskinen@iki.fi
 category:            Development
