@@ -1,4 +1,4 @@
-{-# LANGUAGE TemplateHaskell #-}
+{-# LANGUAGE Rank2Types, TemplateHaskell #-}
 module Myopia.AST where
 
 import           Control.Applicative
@@ -44,17 +44,17 @@ makeLenses ''Env
 
 emptyEnv = Env { _program = mempty, _builtins = mempty }
 
-builtin :: FunName -> SimpleLens (Env m) (Maybe (Builtin m))
+builtin :: FunName -> Lens' (Env m) (Maybe (Builtin m))
 builtin fn = builtins.at fn
 
 type MemoMap = SM.Map (FunName, [Integer]) Integer
 type MyopiaT m = RWST (Env m) () MemoMap m
 type MyopiaM = MyopiaT Identity
 
-funDef :: FunName -> SimpleLens (Env m) (Maybe Fun)
+funDef :: FunName -> Lens' (Env m) (Maybe Fun)
 funDef fn = program.funDefs.at fn
 
-typeDef :: FunName -> SimpleLens (Env m) (Maybe Arity)
+typeDef :: FunName -> Lens' (Env m) (Maybe Arity)
 typeDef fn = program.typeDefs.at fn
 
 getDef :: (Functor m, Monad m) => FunName -> MyopiaT m Expr

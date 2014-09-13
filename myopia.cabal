@@ -13,12 +13,12 @@ cabal-version:       >=1.8
 executable myopia
   main-is:             Myopia.hs
   ghc-options:         -rtsopts
-  build-depends:       base ==4.5.*,
+  build-depends:       base >=4.5.0,
                        cmdargs,
                        containers >= 0.5.0.0,
                        either,
                        haskeline,
-                       lens,
+                       lens >= 4.4,
                        mtl,
                        parsec >= 3.0.0,
                        transformers,

@@ -7,15 +7,12 @@ Turing Tarpit".
 ## Installation and usage
 
     git clone git://github.com/miikka/myopia.git
+    cd myopia
+    cabal sandbox init
     cabal install
     myopia --help
     myopia example.myop fib
     myopia example.myop hw --io
-
-(Myopia requires a more recent version of containers than the one included in
-the latest Haskell Platform (2012.4.0.0). If you're using the platform and want
-to have a bit less of dependency hell, consider using
-[cabal-dev](http://hackage.haskell.org/package/cabal-dev)).
 
 ## How does it work?
 
