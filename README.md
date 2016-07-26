@@ -8,8 +8,7 @@ Turing Tarpit".
 
     git clone git://github.com/miikka/myopia.git
     cd myopia
-    cabal sandbox init
-    cabal install
+    stack install
     myopia --help
     myopia example.myop fib
     myopia example.myop hw --io

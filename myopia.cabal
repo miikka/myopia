@@ -12,6 +12,13 @@ cabal-version:       >=1.8
 
 executable myopia
   main-is:             Myopia.hs
+  other-modules:       Myopia.AST,
+                       Myopia.Builtins,
+                       Myopia.Eval,
+                       Myopia.Parser,
+                       Myopia.Pretty,
+                       Myopia.REPL,
+                       Myopia.TypeCheck
   ghc-options:         -rtsopts
   build-depends:       base >=4.5.0,
                        cmdargs,

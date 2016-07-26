@@ -1,8 +1,10 @@
 module Myopia.Pretty where
 
-import           Text.PrettyPrint.Leijen
+import Prelude                 hiding ((<$>))
 
-import           Myopia.AST
+import Text.PrettyPrint.Leijen
+
+import Myopia.AST
 
 (<.>) :: Doc -> Doc -> Doc
 (<.>) a b = a <> char ',' <$> b
